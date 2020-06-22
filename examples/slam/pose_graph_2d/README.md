@@ -39,11 +39,13 @@ e.g. ~/Documents/temp-catkin-ws/build_isolated/ceres-solver/devel/bin
 
 ```
 /path/to/bin/pose_graph_2d --input /path/to/dataset/dataset.g2o
+./pose_graph_2d --input ~/Downloads/input_M3500_g2o.g2o 
 ```
 
 A python script is provided to visualize the resulting output files.
 ```
 /path/to/repo/examples/slam/pose_graph_2d/plot_results.py --optimized_poses ./poses_optimized.txt --initial_poses ./poses_original.txt
+python plot_results.py --optimized_poses ~/Documents/temp-catkin-ws/build_isolated/ceres-solver/devel/bin/poses_optimized.txt --initial_poses ~/Documents/temp-catkin-ws/build_isolated/ceres-solver/devel/bin/poses_original.txt
 ```
 
 Dataset
