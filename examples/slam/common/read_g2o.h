@@ -61,6 +61,7 @@ bool ReadVertex(std::ifstream* infile,
 }
 
 // Reads the contraints between two vertices in the pose graph
+// the constrains would be parsing in 2d/3d types.h using SE2/3
 template <typename Constraint, typename Allocator>
 void ReadConstraint(std::ifstream* infile,
                     std::vector<Constraint, Allocator>* constraints) {

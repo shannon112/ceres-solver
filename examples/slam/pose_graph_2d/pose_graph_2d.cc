@@ -160,21 +160,25 @@ int main(int argc, char** argv) {
   std::map<int, ceres::examples::Pose2d> poses;
   std::vector<ceres::examples::Constraint2d> constraints;
 
+  //read poses and constraints
   CHECK(ceres::examples::ReadG2oFile(FLAGS_input, &poses, &constraints))
       << "Error reading the file: " << FLAGS_input;
-
   std::cout << "Number of poses: " << poses.size() << '\n';
   std::cout << "Number of constraints: " << constraints.size() << '\n';
 
+  //output org file
   CHECK(ceres::examples::OutputPoses("poses_original.txt", poses))
       << "Error outputting to poses_original.txt";
 
+  //build pose graph
   ceres::Problem problem;
   ceres::examples::BuildOptimizationProblem(constraints, &poses, &problem);
 
+  //solve pose graph
   CHECK(ceres::examples::SolveOptimizationProblem(&problem))
       << "The solve was not successful, exiting.";
 
+  //output optimized file
   CHECK(ceres::examples::OutputPoses("poses_optimized.txt", poses))
       << "Error outputting to poses_original.txt";
 
