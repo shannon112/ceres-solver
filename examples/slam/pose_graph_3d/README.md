@@ -39,16 +39,23 @@ pose_id x y z q_x q_y q_z q_w
 ...
 ```
 where `pose_id` is the corresponding integer ID from the file definition. Note,
-the file will be sorted in ascending order for the ```pose_id```.
+the file will be sorted in ascending order for the `pose_id`.
 
-The executable `pose_graph_3d` expects the first argument to be the path to the
-problem definition. To run the executable,
+The executable `pose_graph_3d` has one flag `--input` which is the path to the
+problem definition. To run the executable,  
+e.g. ~/Documents/temp-catkin-ws/build_isolated/ceres-solver/devel/bin  
 ```
-/path/to/bin/pose_graph_3d /path/to/dataset/dataset.g2o
+/path/to/bin/pose_graph_3d --input /path/to/dataset/dataset.g2o
+./pose_graph_3d --input ~/Downloads/sphere_bignoise_vertex3.g2o 
 ```
 
 A script is provided to visualize the resulting output files. There is also an
 option to enable equal axes using ```--axes_equal```.
 ```
 /path/to/repo/examples/slam/pose_graph_3d/plot_results.py --optimized_poses ./poses_optimized.txt --initial_poses ./poses_original.txt
+python plot_results.py --optimized_poses ~/Documents/temp-catkin-ws/build_isolated/ceres-solver/devel/bin/poses_optimized.txt --initial_poses ~/Documents/temp-catkin-ws/build_isolated/ceres-solver/devel/bin/poses_original.txt
 ```
+
+Dataset
+----------------------------
+slam 2d/3d pose-graph in g2o/toro format: https://lucacarlone.mit.edu/datasets/
