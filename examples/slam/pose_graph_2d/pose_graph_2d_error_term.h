@@ -75,18 +75,21 @@ class PoseGraph2dErrorTerm {
     Eigen::Map<Eigen::Matrix<T, 3, 1> > residuals_map(residuals_ptr);
 
     residuals_map.template head<2>() =
-        RotationMatrix2D(*yaw_a).transpose() * (p_b - p_a) -
-        p_ab_.cast<T>();
+        RotationMatrix2D(*yaw_a).transpose() * (p_b - p_a) - p_ab_.cast<T>();
     residuals_map(2) = ceres::examples::NormalizeAngle(
         (*yaw_b - *yaw_a) - static_cast<T>(yaw_ab_radians_));
 
     // Scale the residuals by the square root information matrix to account for
     // the measurement uncertainty.
+    // --
+    // The information matrix is the inverse of the covariance matrix. If you know a constraint on an edge very well, 
+    // the covariance should be very small. Therefore, the information matrix should be very large.
     residuals_map = sqrt_information_.template cast<T>() * residuals_map;
 
     return true;
   }
 
+  // call this function when using
   static ceres::CostFunction* Create(double x_ab, double y_ab,
                                      double yaw_ab_radians,
                                      const Eigen::Matrix3d& sqrt_information) {

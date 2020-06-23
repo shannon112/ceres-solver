@@ -65,14 +65,13 @@ void BuildOptimizationProblem(const std::vector<Constraint2d>& constraints,
   }
 
   ceres::LossFunction* loss_function = NULL;
-  ceres::LocalParameterization* angle_local_parameterization =
-      AngleLocalParameterization::Create();
+  ceres::LocalParameterization* angle_local_parameterization = AngleLocalParameterization::Create();
 
-  for (std::vector<Constraint2d>::const_iterator constraints_iter =
-           constraints.begin();
+  for (std::vector<Constraint2d>::const_iterator constraints_iter = constraints.begin();
        constraints_iter != constraints.end(); ++constraints_iter) {
     const Constraint2d& constraint = *constraints_iter;
 
+    //check constraints is valid by find begin and end poses
     std::map<int, Pose2d>::iterator pose_begin_iter =
         poses->find(constraint.id_begin);
     CHECK(pose_begin_iter != poses->end())
@@ -82,17 +81,25 @@ void BuildOptimizationProblem(const std::vector<Constraint2d>& constraints,
     CHECK(pose_end_iter != poses->end())
         << "Pose with ID: " << constraint.id_end << " not found.";
 
+    // This class performs a LL^T Cholesky decomposition of a symmetric, 
+    // positive definite matrix A such that A = LL^* = U^*U, where L is lower triangular.
+    // "L = A.llt().matrixL()"
+    // info = L^2; C^-1 = L^2; L = C^-1/2
     const Eigen::Matrix3d sqrt_information =
         constraint.information.llt().matrixL();
+
     // Ceres will take ownership of the pointer.
+    // cost function
     ceres::CostFunction* cost_function = PoseGraph2dErrorTerm::Create(
         constraint.x, constraint.y, constraint.yaw_radians, sqrt_information);
-    problem->AddResidualBlock(
-        cost_function, loss_function, &pose_begin_iter->second.x,
-        &pose_begin_iter->second.y, &pose_begin_iter->second.yaw_radians,
-        &pose_end_iter->second.x, &pose_end_iter->second.y,
-        &pose_end_iter->second.yaw_radians);
 
+    // residual term in cost function
+    problem->AddResidualBlock(
+        cost_function, loss_function, 
+        &pose_begin_iter->second.x, &pose_begin_iter->second.y, &pose_begin_iter->second.yaw_radians,
+        &pose_end_iter->second.x, &pose_end_iter->second.y, &pose_end_iter->second.yaw_radians);
+
+    // parameterization
     problem->SetParameterization(&pose_begin_iter->second.yaw_radians,
                                 angle_local_parameterization);
     problem->SetParameterization(&pose_end_iter->second.yaw_radians,
